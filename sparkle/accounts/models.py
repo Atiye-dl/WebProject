@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
-#from shop.models import Product
+from .managers import UserManager
+from shop.models import Product
 
 
 class User(AbstractBaseUser):
@@ -9,9 +10,11 @@ class User(AbstractBaseUser):
     full_name = models.CharField(max_length=100)    
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    #likes = models.ManyToManyField(Product, blank=True, related_name='likes')
-    is_seller = models.BooleanField(default=False)
+    likes = models.ManyToManyField(Product, blank=True, related_name='likes')
+    # set a manager role for shop manager to access orders and products
+    is_manager = models.BooleanField(default=False)
 
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
@@ -30,5 +33,5 @@ class User(AbstractBaseUser):
     def is_staff(self):
         return self.is_admin
 
-  #  def get_likes_count(self):
-  #     return self.likes.count()
+    def get_likes_count(self):
+        return self.likes.count()
