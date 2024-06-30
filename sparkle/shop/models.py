@@ -6,11 +6,11 @@ from django.template.defaultfilters import slugify
 class Category(models.Model):
     title = models.CharField(max_length=200)
     sub_category = models.ForeignKey(
-        'self' , on_delete = models.CASCADE,
-        related_name= 'sub_categories' , null=True , blank = True
+        'self', on_delete=models.CASCADE,
+        related_name='sub_categories', null=True, blank=True
     )
     is_sub = models.BooleanField(default=False)
-    slug = models.SlugField(max_length=200 , unique=True)
+    slug = models.SlugField(max_length=200, unique=True)
 
     def __str__(self):
         return self.title
@@ -21,17 +21,15 @@ class Category(models.Model):
     def save(self, *args, **kwargs): # new
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
-    
+        
 
 class Product(models.Model):
-    # a category can include many products
-    Category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category')
     image = models.ImageField(upload_to='products')
     title = models.CharField(max_length=250)
     description = models.TextField()
     price = models.IntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
-    is_available = models.BooleanField()
     slug = models.SlugField(unique=True)
 
     class Meta:
