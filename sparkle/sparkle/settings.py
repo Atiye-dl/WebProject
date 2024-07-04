@@ -45,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'online_shop.urls'
+ROOT_URLCONF = 'sparkle.urls'
 
 TEMPLATES = [
     {
@@ -58,14 +58,14 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'online_shop.context_processors.return_cart',
-                'online_shop.context_processors.return_categories',
+                'sparkle.context_processors.return_cart',
+                'sparkle.context_processors.return_categories',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'online_shop.wsgi.application'
+WSGI_APPLICATION = 'sparkle.wsgi.application'
 
 
 # Database
