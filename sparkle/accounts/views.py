@@ -7,7 +7,10 @@ from accounts.models import User
 
 
 def create_manager():
-    
+    """
+    to execute once on startup:
+    this function will call in sparkle/urls.py
+    """
     if not User.objects.filter(email="manager@example.com").first():
         user = User.objects.create_user(
             "manager@example.com", 'shop manager' ,'your-password'
