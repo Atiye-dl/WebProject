@@ -10,6 +10,7 @@ urlpatterns = [
     path('register/', views.user_register, name='user_register'),
     path('login/', views.user_login, name='user_login'),
     path('login/manager/', views.manager_login, name='manager_login'),
+    path('register/manager/', views.manager_register, name='manager_register'),  # New URL pattern for manager registration
     path('logout/', views.user_logout, name='user_logout'),
     path('profile/edit', views.edit_profile, name='edit_profile'),
     path(
@@ -44,4 +45,3 @@ urlpatterns = [
         name='password_reset_complete'
     ),
 ]
-

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import UserRegistrationForm, UserLoginForm, ManagerLoginForm, EditProfileForm
+from .forms import UserRegistrationForm, UserLoginForm, ManagerLoginForm, EditProfileForm, ManagerRegistrationForm
 from accounts.models import User
 
 
@@ -40,6 +40,24 @@ def manager_login(request):
         form = ManagerLoginForm()
     context = {'form': form}
     return render(request, 'manager_login.html', context)
+
+
+def manager_register(request):
+    if request.method == 'POST':
+        form = ManagerRegistrationForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            user = User.objects.create_user(
+                data['email'], data['full_name'], data['password']
+            )
+            user.is_manager = True
+            user.save()
+            messages.success(request, 'Manager account created successfully.', 'success')
+            return redirect('accounts:manager_login')
+    else:
+        form = ManagerRegistrationForm()
+    context = {'title': 'Register Manager', 'form': form}
+    return render(request, 'manager_register.html', context)
 
 
 def user_register(request):

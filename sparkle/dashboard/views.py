@@ -33,12 +33,14 @@ def add_product(request):
     if request.method == 'POST':
         form = AddProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Product added Successfuly!')
+            product = form.save(commit=False)
+            product.added_by = request.user  # Set the added_by field to the current user
+            product.save()
+            messages.success(request, 'Product added successfully!')
             return redirect('dashboard:add_product')
     else:
         form = AddProductForm()
-    context = {'title':'Add Product', 'form':form}
+    context = {'title': 'Add Product', 'form': form}
     return render(request, 'add_product.html', context)
 
 
