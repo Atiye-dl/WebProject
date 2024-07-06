@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from shop.models import Product, Category,Comment
 from cart.forms import QuantityForm
 from .forms import CommentForm
+from django.contrib.admin.views.decorators import staff_member_required
 
 def paginat(request, list_objects):
 	p = Paginator(list_objects, 20)
@@ -33,8 +34,8 @@ def product_detail(request, slug):
     form = QuantityForm()
     product = get_object_or_404(Product, slug=slug)
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:5]
-    comments = product.comments.all()
-    
+    comments = product.comments.filter(approved=True)  # Only show approved comments
+
     if request.method == 'POST':
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -44,6 +45,7 @@ def product_detail(request, slug):
                 new_comment.product = product
                 new_comment.created_at = timezone.now()
                 new_comment.save()
+                messages.success(request, "Your comment has been submitted and is awaiting approval.")
                 return redirect('shop:product_detail', slug=slug)
             else:
                 messages.error(request, "You must purchase this product to leave a comment.")
@@ -51,7 +53,7 @@ def product_detail(request, slug):
             messages.error(request, "Invalid form submission. Please try again.")
     else:
         comment_form = CommentForm()
-    
+
     context = {
         'title': product.title,
         'product': product,
@@ -62,6 +64,16 @@ def product_detail(request, slug):
         'comment_form': comment_form,
     }
     return render(request, 'product_detail.html', context)
+
+@staff_member_required
+def approve_comments(request):
+    if request.method == 'POST':
+        comment_ids = request.POST.getlist('comment_ids')
+        comments = Comment.objects.filter(id__in=comment_ids)
+        comments.update(approved=True)
+        messages.success(request, f'Approved {comments.count()} comments.')
+    return redirect('admin:shop_comment_changelist')
+
 
 @login_required
 def add_to_favorites(request, product_id):
@@ -108,3 +120,4 @@ def filter_by_category(request, slug):
 				for product in Product.objects.filter(category=category).all()]
 	context = {'products': paginat(request ,result)}
 	return render(request, 'home_page.html', context)
+

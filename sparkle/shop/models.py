@@ -52,6 +52,6 @@ class Comment(models.Model):
     product = models.ForeignKey(Product, related_name='comments', on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
-
+    approved = models.BooleanField(default=False) 
     def __str__(self):
-        return f'Comment by {self.author.username} on {self.product.title}'
+        return f'Comment by {self.author.email} on {self.product.title}'
