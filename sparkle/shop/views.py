@@ -3,9 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 
-from shop.models import Product, Category
+from shop.models import Product, Category,Comment
 from cart.forms import QuantityForm
-
+from .forms import CommentForm
 
 def paginat(request, list_objects):
 	p = Paginator(list_objects, 20)
@@ -26,20 +26,32 @@ def home_page(request):
 
 
 def product_detail(request, slug):
-	form = QuantityForm()
-	product = get_object_or_404(Product, slug=slug)
-	related_products = Product.objects.filter(category=product.category).all()[:5]
-	context = {
-		'title':product.title,
-		'product':product,
-		'form':form,
-		'favorites':'favorites',
-		'related_products':related_products
-	}
-	if request.user.likes.filter(id=product.id).first():
-		context['favorites'] = 'remove'
-	return render(request, 'product_detail.html', context)
+    form = QuantityForm()
+    product = get_object_or_404(Product, slug=slug)
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:5]
+    comments = product.comments.all()
 
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.author = request.user 
+            new_comment.product = product
+            new_comment.save()
+            return redirect('shop:product_detail', slug=slug)
+    else:
+        comment_form = CommentForm()
+
+    context = {
+        'title': product.title,
+        'product': product,
+        'form': form,
+        'favorites': 'favorites' if not request.user.likes.filter(id=product.id).exists() else 'remove',
+        'related_products': related_products,
+        'comments': comments,
+        'comment_form': comment_form,
+    }
+    return render(request, 'product_detail.html', context)
 
 @login_required
 def add_to_favorites(request, product_id):

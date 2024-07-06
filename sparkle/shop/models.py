@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django.template.defaultfilters import slugify
+from django.utils import timezone
+from sparkle import settings
 
 
 class Category(models.Model):
@@ -44,3 +46,12 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
+    
+class Comment(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='comments', on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'Comment by {self.author.username} on {self.product.title}'
