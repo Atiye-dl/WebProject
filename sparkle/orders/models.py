@@ -9,6 +9,7 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.BooleanField(default=False)
+    shipping_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         ordering = ('-created',)
@@ -16,11 +17,11 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.user.full_name} - order id: {self.id}"
 
+    
     @property
     def get_total_price(self):
-        total = sum(item.get_cost() for item in self.items.all())
-        return total
-    
+        total_product_price = sum(item.get_cost() for item in self.items.all())
+        return total_product_price + self.shipping_price
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')

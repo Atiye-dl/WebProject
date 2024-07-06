@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 def send_invoice_email(order):
-    context = {'order': order}
+    context = {'order': order, 'shipping_price': order.shipping_price,}
     subject = f'Invoice for Order {order.id}'
     html_message = render_to_string('email_invoice.html', context)
     plain_message = strip_tags(html_message)
@@ -26,15 +26,26 @@ def send_invoice_email(order):
 @login_required
 def create_order(request):
     cart = Cart(request)
-    order = Order.objects.create(user=request.user)
+    total_price_of_items = cart.get_total_price()
+
+    # Determine shipping price based on total price of items
+    if total_price_of_items >= 500:
+        shipping_price = 0
+    else:
+        shipping_price = 15
+    order = Order.objects.create(user=request.user, shipping_price=shipping_price)
+    
     for item in cart:
         OrderItem.objects.create(
             order=order, product=item['product'],
             price=item['price'], quantity=item['quantity']
-    )
+        )
+    
     send_invoice_email(order)
+    
+    cart.clear()
+    
     return redirect('orders:pay_order', order_id=order.id)
-
 
 @login_required
 def checkout(request, order_id):

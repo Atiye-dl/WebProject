@@ -1,4 +1,5 @@
 from shop.models import Product
+import random
 
 CART_SESSION_ID = 'cart'
 
@@ -48,3 +49,10 @@ class Cart:
     def clear(self):
         del self.session[CART_SESSION_ID]
         self.save()
+
+    def get_total_price(self):
+        total_product_price = sum(int(item['price']) * item['quantity'] for item in self.cart.values())
+        return total_product_price + self.get_shipping_price()
+
+    def get_shipping_price(self):
+        return 15   
