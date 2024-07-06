@@ -9,12 +9,15 @@
     <p>Order ID: {{ order.id }}</p>
     <p>Customer: {{ order.user.full_name }}</p>
     <p>Date: {{ order.created }}</p>
+    
     <h2>Items</h2>
     <ul>
         {% for item in order.items.all %}
             <li>{{ item.product.title }} - {{ item.quantity }} x ${{ item.price }}</li>
         {% endfor %}
     </ul>
+    
+    <p>Shipping Price: ${{ shipping_price }}</p>  <!-- Include shipping price here -->
     <p>Total: ${{ order.get_total_price }}</p>
 </body>
 </html>
