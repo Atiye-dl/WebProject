@@ -16,6 +16,10 @@
         <h4 class="mt-4 text-dark">Price: ${{ product.price }}</h4>
         <!-- description -->
         <div class="mt-4 pe-3 mb-5">{{ product.description }}</div>
+        <!-- added by -->
+        <div class="mt-4">
+            <p><strong>Added by:</strong> {{ product.added_by.full_name }}</p>
+        </div>
         <!-- cart btn -->
         <form method="post" action="{% url 'cart:add_to_cart' product.id %}">
             {% csrf_token %}
@@ -29,7 +33,7 @@
         <a href="{% url 'shop:add_to_favorites' product.id %}" class="btn btn-outline-success mt-5 text-capitalize ">add to {{favorites}}</a>
         {% endif %}
 
-                <!-- Add a comment form -->
+        <!-- Add a comment form -->
         <div class="mt-5">
             <h3>Add a comment:</h3>
             <form method="post">
