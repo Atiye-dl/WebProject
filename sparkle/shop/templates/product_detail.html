@@ -28,6 +28,34 @@
         {% else %}
         <a href="{% url 'shop:add_to_favorites' product.id %}" class="btn btn-outline-success mt-5 text-capitalize ">add to {{favorites}}</a>
         {% endif %}
+
+                <!-- Add a comment form -->
+        <div class="mt-5">
+            <h3>Add a comment:</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        
+        <!-- Display existing comments -->
+        {% if comments %}
+            <div class="mt-5">
+                <h3>Comments:</h3>
+                <ul class="list-unstyled">
+                    {% for comment in comments %}
+                    <li class="mb-3">
+                        <p><strong>{{ comment.author }}</strong> | {{ comment.created_at }}</p>
+                        <p>{{ comment.content }}</p>
+                    </li>
+                    {% empty %}
+                    <li>No comments yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
     </div>
     <!-- product image -->
     <div class="col-md-6">
