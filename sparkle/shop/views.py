@@ -1,3 +1,6 @@
+from datetime import timezone
+from django.utils import timezone
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -25,23 +28,30 @@ def home_page(request):
 	return render(request, 'home_page.html', context)
 
 
+@login_required
 def product_detail(request, slug):
     form = QuantityForm()
     product = get_object_or_404(Product, slug=slug)
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:5]
     comments = product.comments.all()
-
+    
     if request.method == 'POST':
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
-            new_comment = comment_form.save(commit=False)
-            new_comment.author = request.user 
-            new_comment.product = product
-            new_comment.save()
-            return redirect('shop:product_detail', slug=slug)
+            if request.user.has_purchased(product):
+                new_comment = comment_form.save(commit=False)
+                new_comment.author = request.user 
+                new_comment.product = product
+                new_comment.created_at = timezone.now()
+                new_comment.save()
+                return redirect('shop:product_detail', slug=slug)
+            else:
+                messages.error(request, "You must purchase this product to leave a comment.")
+        else:
+            messages.error(request, "Invalid form submission. Please try again.")
     else:
         comment_form = CommentForm()
-
+    
     context = {
         'title': product.title,
         'product': product,

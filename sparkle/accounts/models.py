@@ -35,3 +35,6 @@ class User(AbstractBaseUser):
 
     def get_likes_count(self):
         return self.likes.count()
+    
+    def has_purchased(self, product):
+        return self.orders.filter(items__product=product).exists()    
