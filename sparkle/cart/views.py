@@ -11,13 +11,18 @@ from shop.models import Product
 def add_to_cart(request, product_id):
     cart = Cart(request)
     product = get_object_or_404(Product, id=product_id)
+    
+    # Check if the current user is the creator of the product
+    if product.added_by == request.user:
+        messages.error(request, "You cannot add your own product to the cart.")
+        return redirect('shop:product_detail', slug=product.slug)
+
     form = QuantityForm(request.POST)
     if form.is_valid():
         data = form.cleaned_data
         cart.add(product=product, quantity=data['quantity'])
-        messages.success(request, 'Added to your cart!', 'info')
+        messages.success(request, 'Added to your cart successfully.')
     return redirect('shop:product_detail', slug=product.slug)
-
 
 @login_required
 def show_cart(request):
