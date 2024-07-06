@@ -98,3 +98,10 @@ def order_detail(request, id):
     items = OrderItem.objects.filter(order=order).all()
     context = {'title':'order detail', 'items':items, 'order':order}
     return render(request, 'order_detail.html', context)
+
+@login_required
+@user_passes_test(is_manager)
+def manager_sales(request):
+    orders = Order.objects.filter(items__product__added_by=request.user).order_by('-created')
+    context = {'title': 'Manager Sales', 'orders': orders}
+    return render(request, 'manager_sales.html', context)
