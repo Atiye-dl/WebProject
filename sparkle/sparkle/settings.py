@@ -137,4 +137,4 @@ EMAIL_PORT = 587
 EMAIL_USE_SSL = False
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'hosthost587@gmail.com'
-EMAIL_HOST_PASSWORD = 'host587HOST'
+EMAIL_HOST_PASSWORD = 'nous eblo lomx aysk '
