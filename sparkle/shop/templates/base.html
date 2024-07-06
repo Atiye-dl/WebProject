@@ -61,6 +61,11 @@
             <li><a href="{% url 'cart:show_cart' %}" <a class="dropdown-item">Cart</a></li>
             <li><a href="{% url 'shop:favorites' %}" <a class="dropdown-item">Favorites</a></li>
             <li><a href="{% url 'orders:user_orders' %}" <a class="dropdown-item">Orders</a></li>
+            {% if request.user.is_authenticated and request.user.is_manager %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:products' %}">Dashboard</a>
+                    </li>
+            {% endif %}
             <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}">Edit Profile</a></li>
             <li><a class="dropdown-item text-danger" href="{% url 'accounts:user_logout' %}">Sign out</a></li>
           </ul>
