@@ -1,0 +1,31 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<h2>{{ title }}</h2>
+
+<table class="table table-striped">
+    <thead class="text-muted">
+        <tr>
+            <th scope="col">Order ID</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Date</th>
+            <th scope="col">Customer Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        {% for item in order.items.all %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ item.product.title }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ order.created_at }}</td>
+            <td>{{ order.user.full_name }}</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
