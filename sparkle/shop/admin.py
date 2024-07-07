@@ -19,6 +19,17 @@ class CommentAdmin(admin.ModelAdmin):
 
     approve_comments.short_description = 'Approve selected comments'
 
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'price', 'is_approved')
+    list_filter = ('is_approved', 'category')
+    actions = ['approve_products']
+
+    def approve_products(self, request, queryset):
+        queryset.update(is_approved=True)
+        self.message_user(request, f'Approved {queryset.count()} products.')
+
+    approve_products.short_description = 'Approve selected products'
+    
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Product)
 admin.site.register(Category)

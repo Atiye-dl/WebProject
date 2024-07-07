@@ -34,6 +34,8 @@ class Product(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True)
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='products_added')
+    is_approved = models.BooleanField(default=False)
+    
     class Meta:
         ordering = ('-date_created',)
 

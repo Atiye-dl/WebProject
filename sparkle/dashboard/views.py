@@ -22,7 +22,7 @@ def is_manager(user):
 @user_passes_test(is_manager)
 @login_required
 def products(request):
-    products = Product.objects.filter(added_by=request.user)  # Filter products by manager
+    products = Product.objects.filter(added_by=request.user, is_approved=True)  # Filter products by manager
     context = {'title': 'Products', 'products': products}
     return render(request, 'products.html', context)
 
@@ -34,9 +34,10 @@ def add_product(request):
         form = AddProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
-            product.added_by = request.user  # Set the added_by field to the current user
+            product.added_by = request.user  
+            product.is_approved = False
             product.save()
-            messages.success(request, 'Product added successfully!')
+            messages.success(request, 'Product added successfully! Awaiting admin approval.')
             return redirect('dashboard:add_product')
     else:
         form = AddProductForm()

@@ -24,7 +24,7 @@ def paginat(request, list_objects):
 
 
 def home_page(request):
-	products = Product.objects.all()
+	products = Product.objects.filter(is_approved=True)
 	context = {'products': paginat(request ,products)}
 	return render(request, 'home_page.html', context)
 
@@ -32,7 +32,7 @@ def home_page(request):
 @login_required
 def product_detail(request, slug):
     form = QuantityForm()
-    product = get_object_or_404(Product, slug=slug)
+    product = get_object_or_404(Product, slug=slug ,is_approved=True)
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:5]
     comments = product.comments.filter(approved=True)  # Only show approved comments
 
