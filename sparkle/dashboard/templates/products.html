@@ -9,6 +9,7 @@
             <th scope="col">price</th>
             <th scope="col">category</th>
             <th scope="col">date</th>
+            <th scope="col">approved </th>
             <th scope="col"></th>
             <th scope="col"></th>
         </tr>
@@ -21,6 +22,7 @@
             <td>${{ product.price }}</td>
             <td>{{ product.category }}</td>
             <td>{{ product.date_created|date:"M d" }}</td>
+            <td>{{ product.is_approved }} </td>
             <td><a class="text-danger text-decoration-none" href="{% url 'dashboard:delete_product' product.id %}">Delete</a></td>
             <td><a class="text-info text-decoration-none" href="{% url 'dashboard:edit_product' product.id %}">Edit</a></td>
         </tr>

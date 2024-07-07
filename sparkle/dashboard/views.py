@@ -22,7 +22,7 @@ def is_manager(user):
 @user_passes_test(is_manager)
 @login_required
 def products(request):
-    products = Product.objects.filter(added_by=request.user, is_approved=True)  # Filter products by manager
+    products = Product.objects.filter(added_by=request.user)  # Filter products by manager
     context = {'title': 'Products', 'products': products}
     return render(request, 'products.html', context)
 
