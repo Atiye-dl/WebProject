@@ -10,6 +10,7 @@ from shop.models import Product, Category,Comment
 from cart.forms import QuantityForm
 from .forms import CommentForm
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Sum
 
 def paginat(request, list_objects):
 	p = Paginator(list_objects, 20)
@@ -121,3 +122,10 @@ def filter_by_category(request, slug):
 	context = {'products': paginat(request ,result)}
 	return render(request, 'home_page.html', context)
 
+def bestselling_products(request):
+    bestselling_products = Product.objects.filter(is_approved=True).annotate(total_quantity_sold=Sum('order_items__quantity')).order_by('-total_quantity_sold')[:10]
+    query = request.GET.get('q')
+    if query:
+        bestselling_products = bestselling_products.filter(title__icontains=query)
+    context = {'title': 'Bestselling Products', 'products': bestselling_products}
+    return render(request, 'bestselling_products.html', context)

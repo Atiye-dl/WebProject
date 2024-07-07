@@ -7,22 +7,20 @@ from django.utils import timezone
 from .models import Order, OrderItem
 from cart.utils.cart import Cart
 
-#------------------------
-
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 def send_invoice_email(order):
-    context = {'order': order, 'shipping_price': order.shipping_price,}
-    subject = f'Invoice for Order {order.id}'
+    context = {'order': order, 'shipping_price': order.shipping_price}
+    subject = f'Reciept for Order {order.id}'
     html_message = render_to_string('email_invoice.html', context)
     plain_message = strip_tags(html_message)
     from_email = 'your-email@example.com'
     to = order.user.email
 
     send_mail(subject, plain_message, from_email, [to], html_message=html_message)
-#----------------------------------------------------
+
 @login_required
 def create_order(request):
     cart = Cart(request)
@@ -33,19 +31,21 @@ def create_order(request):
         shipping_price = 0
     else:
         shipping_price = 15
+
     order = Order.objects.create(user=request.user, shipping_price=shipping_price)
-    
+
     for item in cart:
         OrderItem.objects.create(
             order=order, product=item['product'],
             price=item['price'], quantity=item['quantity']
         )
-    
-    send_invoice_email(order)
-    
+
+    send_invoice_email(order)  # Email is sent here
+
     cart.clear()
-    
+
     return redirect('orders:pay_order', order_id=order.id)
+
 
 @login_required
 def checkout(request, order_id):
