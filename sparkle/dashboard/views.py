@@ -49,7 +49,7 @@ def add_product(request):
 @login_required
 def delete_product(request, id):
     product = Product.objects.filter(id=id).delete()
-    messages.success(request, 'product has been deleted!', 'success')
+    messages.success(request, 'Product has been deleted!', 'success')
     return redirect('dashboard:products')
 
 
@@ -87,7 +87,7 @@ def add_category(request):
 @user_passes_test(is_manager)
 @login_required
 def orders(request):
-    orders = Order.objects.all()
+    orders = Order.objects.filter(user=request.user)  # Filter orders by the current manager
     context = {'title':'Orders', 'orders':orders}
     return render(request, 'orders.html', context)
 
@@ -95,14 +95,17 @@ def orders(request):
 @user_passes_test(is_manager)
 @login_required
 def order_detail(request, id):
-    order = Order.objects.filter(id=id).first()
+    order = Order.objects.filter(id=id, user=request.user).first()  # Ensure order belongs to the current manager
+    if not order:
+        raise Http404("Order does not exist or you do not have permission to view it.")
     items = OrderItem.objects.filter(order=order).all()
     context = {'title':'order detail', 'items':items, 'order':order}
     return render(request, 'order_detail.html', context)
 
+
 @login_required
 @user_passes_test(is_manager)
 def manager_sales(request):
-    orders = Order.objects.filter(items__product__added_by=request.user).order_by('-created')
+    orders = Order.objects.filter(items__product__added_by=request.user).order_by('-created').distinct()
     context = {'title': 'Manager Sales', 'orders': orders}
     return render(request, 'manager_sales.html', context)

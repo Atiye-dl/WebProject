@@ -29,7 +29,7 @@ def create_order(request):
     total_price_of_items = cart.get_total_price()
 
     # Determine shipping price based on total price of items
-    if total_price_of_items >= 500:
+    if total_price_of_items >= 100:
         shipping_price = 0
     else:
         shipping_price = 15
