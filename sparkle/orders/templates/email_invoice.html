@@ -2,22 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice</title>
+    <title>Receipt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total, .shipping {
+            font-weight: bold;
+        }
+        .thank-you {
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #333;
+            text-align: center;
+        }
+        .thank-you p {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Invoice</h1>
-    <p>Order ID: {{ order.id }}</p>
-    <p>Customer: {{ order.user.full_name }}</p>
-    <p>Date: {{ order.created }}</p>
-    
-    <h2>Items</h2>
-    <ul>
-        {% for item in order.items.all %}
-            <li>{{ item.product.title }} - {{ item.quantity }} x ${{ item.price }}</li>
-        {% endfor %}
-    </ul>
-    
-    <p>Shipping Price: ${{ shipping_price }}</p>  <!-- Include shipping price here -->
-    <p>Total: ${{ order.get_total_price }}</p>
+    <div class="container">
+        <h1>Receipt</h1>
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>Customer:</strong> {{ order.user.full_name }}</p>
+        <p><strong>Date:</strong> {{ order.created }}</p>
+        
+        <h2>Items</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>${{ item.get_cost }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="shipping">Shipping Price:</td>
+                    <td class="shipping">${{ shipping_price }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="total">Total:</td>
+                    <td class="total">${{ order.get_total_price }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="thank-you">
+            <p>Thank you for shopping with us!</p>
+            <p>We hope to see you again soon.</p>
+        </div>
+    </div>
 </body>
 </html>
