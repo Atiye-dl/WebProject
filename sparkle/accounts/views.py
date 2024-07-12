@@ -6,42 +6,6 @@ from .forms import UserRegistrationForm, UserLoginForm, ManagerLoginForm, EditPr
 from accounts.models import User
 
 
-def create_manager():
-    """
-    to execute once on startup:
-    this function will call in sparkle/urls.py
-    """
-    if not User.objects.filter(email="manager@example.com").first():
-        user = User.objects.create_user(
-            "manager@example.com", 'shop manager' ,'your-password'
-        )
-        # give this user manager role
-        user.is_manager = True
-        user.save()
-
-
-def manager_login(request):
-    if request.method == 'POST':
-        form = ManagerLoginForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            user = authenticate(
-                request, email=data['email'], password=data['password']
-            )
-            if user is not None and user.is_manager:
-                login(request, user)
-                return redirect('dashboard:products')
-            else:
-                messages.error(
-                    request, 'username or password is wrong', 'danger'
-                )
-                return redirect('accounts:manager_login')
-    else:
-        form = ManagerLoginForm()
-    context = {'form': form}
-    return render(request, 'manager_login.html', context)
-
-
 def manager_register(request):
     if request.method == 'POST':
         form = ManagerRegistrationForm(request.POST)
@@ -53,7 +17,7 @@ def manager_register(request):
             user.is_manager = True
             user.save()
             messages.success(request, 'Manager account created successfully.', 'success')
-            return redirect('accounts:manager_login')
+            return redirect('accounts:user_login')
     else:
         form = ManagerRegistrationForm()
     context = {'title': 'Register Manager', 'form': form}

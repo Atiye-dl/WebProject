@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
-from shop.models import Product  # Adjust the import as per your actual app structure
+from shop.models import Product  
 
 class UserManager(BaseUserManager):
     def create_user(self, email, full_name, password=None, **extra_fields):
@@ -25,8 +25,8 @@ class User(AbstractBaseUser):
     full_name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    is_manager = models.BooleanField(default=False)  # New field for manager role
-    likes = models.ManyToManyField(Product, blank=True, related_name='likes')  # Assuming Product model exists
+    is_manager = models.BooleanField(default=False)  
+    likes = models.ManyToManyField(Product, blank=True, related_name='likes')  
 
     objects = UserManager()
 
@@ -53,4 +53,4 @@ class User(AbstractBaseUser):
         return self.orders.filter(items__product=product).exists()
 
     def is_shop_manager(self):
-        return self.is_manager  # Method to check if user is a shop manager
+        return self.is_manager 

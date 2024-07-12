@@ -1,6 +1,5 @@
 from datetime import timezone
 from django.utils import timezone
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -12,6 +11,7 @@ from .forms import CommentForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 
+#Paginates a list of objects with 20 objects per page.
 def paginat(request, list_objects):
 	p = Paginator(list_objects, 20)
 	page_number = request.GET.get('page')
@@ -34,7 +34,7 @@ def home_page(request):
 def product_detail(request, slug):
     form = QuantityForm()
     product = get_object_or_404(Product, slug=slug ,is_approved=True)
-    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:5]
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:5] #5 other products in the same category as the current product
     comments = product.comments.filter(approved=True)  # Only show approved comments
 
     if request.method == 'POST':
@@ -66,15 +66,6 @@ def product_detail(request, slug):
     }
     return render(request, 'product_detail.html', context)
 
-@staff_member_required
-def approve_comments(request):
-    if request.method == 'POST':
-        comment_ids = request.POST.getlist('comment_ids')
-        comments = Comment.objects.filter(id__in=comment_ids)
-        comments.update(approved=True)
-        messages.success(request, f'Approved {comments.count()} comments.')
-    return redirect('admin:shop_comment_changelist')
-
 
 @login_required
 def add_to_favorites(request, product_id):
@@ -105,9 +96,7 @@ def search(request):
 
 
 def filter_by_category(request, slug):
-	"""when user clicks on parent category
-	we want to show all products in its sub-categories too
-	"""
+    
 	result = []
 	category = Category.objects.filter(slug=slug).first()
 	[result.append(product) \
