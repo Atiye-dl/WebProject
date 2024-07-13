@@ -6,11 +6,11 @@ from cart.utils.cart import Cart
 from .forms import QuantityForm
 from shop.models import Product
 
-
 @login_required
 def add_to_cart(request, product_id):
-    cart = Cart(request)
-    product = get_object_or_404(Product, id=product_id)
+    """Add a product to the cart, ensuring the user is not adding their own product."""
+    cart = Cart(request)  # Initialize the cart using the current request
+    product = get_object_or_404(Product, id=product_id)  # Fetch the product or return a 404 if not found
     
     # Check if the current user is the creator of the product
     if product.added_by == request.user:
@@ -26,14 +26,15 @@ def add_to_cart(request, product_id):
 
 @login_required
 def show_cart(request):
-    cart = Cart(request)
-    context = {'title': 'Cart', 'cart': cart}
-    return render(request, 'cart.html', context)
-
+    """Display the current user's cart."""
+    cart = Cart(request)  # Initialize the cart using the current request
+    context = {'title': 'Cart', 'cart': cart}  # Prepare context data for rendering
+    return render(request, 'cart.html', context)  # Render the cart template with context data
 
 @login_required
 def remove_from_cart(request, product_id):
-    cart = Cart(request)
-    product = get_object_or_404(Product, id=product_id)
-    cart.remove(product)
-    return redirect('cart:show_cart')
+    """Remove a product from the cart."""
+    cart = Cart(request)  # Initialize the cart using the current request
+    product = get_object_or_404(Product, id=product_id)  # Fetch the product or return a 404 if not found
+    cart.remove(product)  # Remove the product from the cart
+    return redirect('cart:show_cart')  # Redirect to the cart view
